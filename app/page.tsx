@@ -1,5 +1,51 @@
 "use client"
-import { useMemo, useState } from 'react'
+
+import React, { useMemo, useState } from 'react'
+
+type VenueCard = {
+  id: number
+  image: string
+  venue: string
+  title: string
+  badges?: string[]
+  scarcity?: string
+  meta?: string
+  banner?: string
+  description?: string
+  image2?: string
+  image3?: string
+  category?: string
+}
+
+type ListingCard = {
+  id: number
+  name: string
+  category: string
+  area: string
+  image: string
+  badge: string
+  title: string
+}
+
+type ReservationHeaderProps = {
+  selectedVenue: string
+  venueQuery: string
+  setVenueQuery: React.Dispatch<React.SetStateAction<string>>
+  isDropdownOpen: boolean
+  setIsDropdownOpen: React.Dispatch<React.SetStateAction<boolean>>
+  filteredVenues: string[]
+  onSelectVenue: (venue: string) => void
+}
+
+type VenueDetailsPageProps = {
+  venue: VenueCard
+  onBack: () => void
+}
+
+type ViewAllListingsPageProps = {
+  onBack: () => void
+  onOpenVenue: (venue: VenueCard) => void
+}
 
 function ReservationHeader({
   selectedVenue,
@@ -9,8 +55,7 @@ function ReservationHeader({
   setIsDropdownOpen,
   filteredVenues,
   onSelectVenue,
-  compact = false,
-}) {
+}: ReservationHeaderProps) {
   return (
     <div className="sticky top-0 z-50 border-b border-white/10 bg-neutral-950/92 backdrop-blur-xl">
       <div className="mx-auto max-w-7xl px-4 py-3 sm:px-6 lg:px-8">
@@ -83,7 +128,7 @@ function ReservationHeader({
   )
 }
 
-function VenueDetailsPage({ venue, onBack }) {
+function VenueDetailsPage({ venue, onBack }: VenueDetailsPageProps) {
   const [venueQuery, setVenueQuery] = useState(venue.venue)
   const [selectedVenue, setSelectedVenue] = useState(venue.venue)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
@@ -178,11 +223,11 @@ function VenueDetailsPage({ venue, onBack }) {
   )
 }
 
-function ViewAllListingsPage({ onBack, onOpenVenue }) {
+function ViewAllListingsPage({ onBack, onOpenVenue }: ViewAllListingsPageProps) {
   const [search, setSearch] = useState('')
   const [activeCategory, setActiveCategory] = useState('All')
 
-  const listings = [
+  const listings: ListingCard[] = [
     {
       id: 1,
       name: 'Maison Noir',
@@ -345,7 +390,7 @@ function ViewAllListingsPage({ onBack, onOpenVenue }) {
 
 export default function DallasMvpHomepage() {
   const [showAllPage, setShowAllPage] = useState(false)
-  const [selectedVenueDetails, setSelectedVenueDetails] = useState(null)
+  const [selectedVenueDetails, setSelectedVenueDetails] = useState<VenueCard | null>(null)
   const [venueQuery, setVenueQuery] = useState('')
   const [selectedVenue, setSelectedVenue] = useState('Select a venue')
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
@@ -356,7 +401,7 @@ export default function DallasMvpHomepage() {
     return allVenues.filter((venue) => venue.toLowerCase().includes(venueQuery.toLowerCase()))
   }, [venueQuery])
 
-  const featuredCards = [
+  const featuredCards: VenueCard[] = [
     {
       id: 1,
       image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80',
@@ -392,7 +437,7 @@ export default function DallasMvpHomepage() {
     },
   ]
 
-  const secondaryCards = [
+  const secondaryCards: VenueCard[] = [
     {
       id: 4,
       image: 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=1200&q=80',
