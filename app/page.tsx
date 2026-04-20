@@ -35,6 +35,7 @@ type ReservationHeaderProps = {
   setIsDropdownOpen: React.Dispatch<React.SetStateAction<boolean>>
   filteredVenues: string[]
   onSelectVenue: (venue: string) => void
+  compact?: boolean
 }
 
 type VenueDetailsPageProps = {
@@ -55,11 +56,18 @@ function ReservationHeader({
   setIsDropdownOpen,
   filteredVenues,
   onSelectVenue,
+  compact = false,
 }: ReservationHeaderProps) {
   return (
     <div className="sticky top-0 z-50 border-b border-white/10 bg-neutral-950/92 backdrop-blur-xl">
       <div className="mx-auto max-w-7xl px-4 py-3 sm:px-6 lg:px-8">
-        <div className={`grid grid-cols-1 gap-2 ${compact ? 'lg:grid-cols-[minmax(0,280px)_minmax(0,1fr)_minmax(0,200px)_minmax(0,150px)_auto]' : 'xl:grid-cols-[minmax(0,300px)_minmax(0,1fr)_minmax(0,210px)_minmax(0,160px)_auto]'}`}>
+        <div
+          className={`grid grid-cols-1 gap-2 ${
+            compact
+              ? 'lg:grid-cols-[minmax(0,280px)_minmax(0,1fr)_minmax(0,200px)_minmax(0,150px)_auto]'
+              : 'xl:grid-cols-[minmax(0,300px)_minmax(0,1fr)_minmax(0,210px)_minmax(0,160px)_auto]'
+          }`}
+        >
           <div className="relative w-full">
             <button
               type="button"
@@ -75,13 +83,13 @@ function ReservationHeader({
                 <input
                   type="text"
                   value={venueQuery}
-                  onChange={(e) => setVenueQuery(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setVenueQuery(e.target.value)}
                   placeholder="Search venue..."
                   className="mb-3 w-full rounded-xl border border-white/10 bg-black/40 px-3 py-2.5 text-sm text-white placeholder:text-white/35 outline-none transition focus:border-cyan-400/60"
                 />
 
                 <div className="max-h-56 space-y-1 overflow-y-auto">
-                  {filteredVenues.map((venue) => (
+                  {filteredVenues.map((venue: string) => (
                     <button
                       key={venue}
                       type="button"
@@ -129,11 +137,11 @@ function ReservationHeader({
 }
 
 function VenueDetailsPage({ venue, onBack }: VenueDetailsPageProps) {
-  const [venueQuery, setVenueQuery] = useState(venue.venue)
-  const [selectedVenue, setSelectedVenue] = useState(venue.venue)
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [venueQuery, setVenueQuery] = useState<string>(venue.venue)
+  const [selectedVenue, setSelectedVenue] = useState<string>(venue.venue)
+  const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false)
 
-  const allVenues = [
+  const allVenues: string[] = [
     'Maison Noir',
     'Velvet Room',
     'The Saint Elm',
@@ -146,7 +154,7 @@ function VenueDetailsPage({ venue, onBack }: VenueDetailsPageProps) {
 
   const filteredVenues = useMemo(() => {
     return allVenues.filter((item) => item.toLowerCase().includes(venueQuery.toLowerCase()))
-  }, [venueQuery])
+  }, [allVenues, venueQuery])
 
   return (
     <main className="min-h-screen bg-neutral-950 text-white">
@@ -157,7 +165,7 @@ function VenueDetailsPage({ venue, onBack }: VenueDetailsPageProps) {
         isDropdownOpen={isDropdownOpen}
         setIsDropdownOpen={setIsDropdownOpen}
         filteredVenues={filteredVenues}
-        onSelectVenue={(value) => {
+        onSelectVenue={(value: string) => {
           setSelectedVenue(value)
           setVenueQuery(value)
           setIsDropdownOpen(false)
@@ -181,7 +189,7 @@ function VenueDetailsPage({ venue, onBack }: VenueDetailsPageProps) {
             </div>
 
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-              {[venue.image, venue.image2 || venue.image, venue.image3 || venue.image].map((img, i) => (
+              {[venue.image, venue.image2 || venue.image, venue.image3 || venue.image].map((img: string, i: number) => (
                 <div key={i} className="overflow-hidden rounded-[1.25rem] border border-white/10 bg-neutral-900">
                   <img src={img} alt={`${venue.venue} ${i + 1}`} className="h-28 w-full object-cover sm:h-36" />
                 </div>
@@ -198,7 +206,7 @@ function VenueDetailsPage({ venue, onBack }: VenueDetailsPageProps) {
             <p className="mt-4 text-sm text-white/55">{venue.meta}</p>
 
             <div className="mt-6 flex flex-wrap gap-2">
-              {(venue.badges || []).map((badge) => (
+              {(venue.badges || []).map((badge: string) => (
                 <span key={badge} className="rounded-full bg-white/8 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.16em] text-white/70">
                   {badge}
                 </span>
@@ -224,8 +232,8 @@ function VenueDetailsPage({ venue, onBack }: VenueDetailsPageProps) {
 }
 
 function ViewAllListingsPage({ onBack, onOpenVenue }: ViewAllListingsPageProps) {
-  const [search, setSearch] = useState('')
-  const [activeCategory, setActiveCategory] = useState('All')
+  const [search, setSearch] = useState<string>('')
+  const [activeCategory, setActiveCategory] = useState<string>('All')
 
   const listings: ListingCard[] = [
     {
@@ -284,7 +292,7 @@ function ViewAllListingsPage({ onBack, onOpenVenue }: ViewAllListingsPageProps) 
     },
   ]
 
-  const categories = ['All', 'Restaurant', 'Bar', 'Cafe', 'Lounge', 'Nightclub', 'Cocktails']
+  const categories: string[] = ['All', 'Restaurant', 'Bar', 'Cafe', 'Lounge', 'Nightclub', 'Cocktails']
 
   const filteredListings = useMemo(() => {
     return listings.filter((item) => {
@@ -297,7 +305,7 @@ function ViewAllListingsPage({ onBack, onOpenVenue }: ViewAllListingsPageProps) 
         item.title.toLowerCase().includes(q)
       return matchesCategory && matchesSearch
     })
-  }, [activeCategory, search])
+  }, [activeCategory, listings, search])
 
   return (
     <main className="min-h-screen bg-neutral-950 text-white">
@@ -334,13 +342,13 @@ function ViewAllListingsPage({ onBack, onOpenVenue }: ViewAllListingsPageProps) 
             <input
               type="text"
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
               placeholder="Search restaurants, bars, cafes, lounges, nightclubs..."
               className="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white placeholder:text-white/35 outline-none transition focus:border-cyan-400/60 sm:text-base"
             />
 
             <div className="flex gap-2 overflow-x-auto pb-1">
-              {categories.map((category) => (
+              {categories.map((category: string) => (
                 <button
                   key={category}
                   type="button"
@@ -357,7 +365,7 @@ function ViewAllListingsPage({ onBack, onOpenVenue }: ViewAllListingsPageProps) 
         </div>
 
         <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
-          {filteredListings.map((item) => (
+          {filteredListings.map((item: ListingCard) => (
             <article key={item.id} className="overflow-hidden rounded-[1.75rem] border border-white/10 bg-neutral-900 shadow-lg shadow-black/20 transition hover:-translate-y-1 hover:border-white/20">
               <div className="relative aspect-[16/11] overflow-hidden">
                 <img src={item.image} alt={item.name} className="h-full w-full object-cover transition duration-500 hover:scale-105" />
@@ -374,7 +382,18 @@ function ViewAllListingsPage({ onBack, onOpenVenue }: ViewAllListingsPageProps) 
                 <p className="mt-2 text-sm text-white/50">{item.area}</p>
                 <p className="mt-3 text-sm text-white/70">{item.title}</p>
                 <button
-                  onClick={() => onOpenVenue({ venue: item.name, title: item.title, image: item.image, banner: item.badge, meta: item.area, badges: [item.category], scarcity: 'Only a few spots left tonight.' })}
+                  onClick={() =>
+                    onOpenVenue({
+                      id: item.id,
+                      venue: item.name,
+                      title: item.title,
+                      image: item.image,
+                      banner: item.badge,
+                      meta: item.area,
+                      badges: [item.category],
+                      scarcity: 'Only a few spots left tonight.',
+                    })
+                  }
                   className="mt-5 w-full rounded-2xl bg-cyan-400 px-4 py-3 text-sm font-semibold text-black transition hover:bg-cyan-300"
                 >
                   View Venue
@@ -389,17 +408,17 @@ function ViewAllListingsPage({ onBack, onOpenVenue }: ViewAllListingsPageProps) 
 }
 
 export default function DallasMvpHomepage() {
-  const [showAllPage, setShowAllPage] = useState(false)
+  const [showAllPage, setShowAllPage] = useState<boolean>(false)
   const [selectedVenueDetails, setSelectedVenueDetails] = useState<VenueCard | null>(null)
-  const [venueQuery, setVenueQuery] = useState('')
-  const [selectedVenue, setSelectedVenue] = useState('Select a venue')
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [venueQuery, setVenueQuery] = useState<string>('')
+  const [selectedVenue, setSelectedVenue] = useState<string>('Select a venue')
+  const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false)
 
-  const allVenues = ['Maison Noir', 'Velvet Room', 'The Saint Elm', 'Club Aster', 'Marble House', 'Atelier Dallas', 'Noir Terrace', 'Rooftop Social']
+  const allVenues: string[] = ['Maison Noir', 'Velvet Room', 'The Saint Elm', 'Club Aster', 'Marble House', 'Atelier Dallas', 'Noir Terrace', 'Rooftop Social']
 
   const filteredVenues = useMemo(() => {
     return allVenues.filter((venue) => venue.toLowerCase().includes(venueQuery.toLowerCase()))
-  }, [venueQuery])
+  }, [allVenues, venueQuery])
 
   const featuredCards: VenueCard[] = [
     {
@@ -481,7 +500,7 @@ export default function DallasMvpHomepage() {
         isDropdownOpen={isDropdownOpen}
         setIsDropdownOpen={setIsDropdownOpen}
         filteredVenues={filteredVenues}
-        onSelectVenue={(value) => {
+        onSelectVenue={(value: string) => {
           setSelectedVenue(value)
           setVenueQuery(value)
           setIsDropdownOpen(false)
@@ -564,7 +583,7 @@ export default function DallasMvpHomepage() {
         </div>
 
         <div className="grid grid-cols-1 gap-5 sm:gap-6 md:grid-cols-2 xl:grid-cols-3 xl:gap-8">
-          {featuredCards.map((card) => (
+          {featuredCards.map((card: VenueCard) => (
             <article key={card.id} className="overflow-hidden rounded-[2rem] border border-white/10 bg-neutral-900 shadow-xl shadow-black/20 transition duration-300 hover:-translate-y-1 hover:border-white/20">
               <div className="relative aspect-[16/11] overflow-hidden">
                 <img src={card.image} alt={card.title} className="h-full w-full object-cover transition duration-500 hover:scale-105" />
@@ -575,7 +594,7 @@ export default function DallasMvpHomepage() {
 
               <div className="p-5 sm:p-6">
                 <div className="flex flex-wrap gap-2">
-                  {card.badges.map((badge) => (
+                  {(card.badges || []).map((badge: string) => (
                     <span key={badge} className="rounded-full bg-white/6 px-3 py-1 text-[11px] font-medium tracking-wide text-white/75">
                       {badge}
                     </span>
@@ -623,7 +642,7 @@ export default function DallasMvpHomepage() {
           </div>
 
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3 xl:gap-6">
-            {secondaryCards.map((card) => (
+            {secondaryCards.map((card: VenueCard) => (
               <article key={card.id} className="overflow-hidden rounded-[1.75rem] border border-white/10 bg-black/30 transition hover:border-white/20">
                 <div className="aspect-[16/10] overflow-hidden">
                   <img src={card.image} alt={card.title} className="h-full w-full object-cover transition duration-500 hover:scale-105" />
